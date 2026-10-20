@@ -1,29 +1,28 @@
 BEGIN;
-SET LOCAL search_path TO medical, public;
-INSERT INTO specialties (name) VALUES ('Терапия'), ('Кардиология'), ('Неврология');
-INSERT INTO patients (medical_record_no, full_name, birth_date, sex, phone) VALUES
+INSERT INTO medical.specialties (name) VALUES ('Терапия'), ('Кардиология'), ('Неврология');
+INSERT INTO medical.patients (medical_record_no, full_name, birth_date, sex, phone) VALUES
  ('P-000001', 'Иванов Алексей Сергеевич', '1995-04-12', 'M', '+79000000001'),
  ('P-000002', 'Петрова Анна Игоревна', '1988-09-23', 'F', '+79000000002'),
  ('P-000003', 'Сидоров Павел Олегович', '2001-01-15', 'M', NULL),
  ('P-000004', 'Смирнова Елена Андреевна', '1970-06-04', 'F', '+79000000004');
-INSERT INTO doctors (personnel_no, full_name, specialty_id) VALUES
+INSERT INTO medical.doctors (personnel_no, full_name, specialty_id) VALUES
  ('D-001', 'Орлова Мария Петровна', 1),
  ('D-002', 'Волков Дмитрий Ильич', 2),
  ('D-003', 'Соколова Ирина Львовна', 3),
  ('D-004', 'Морозов Олег Викторович', 1);
-INSERT INTO diagnoses (code, name) VALUES
+INSERT INTO medical.diagnoses (code, name) VALUES
  ('J06.9', 'Острая инфекция верхних дыхательных путей неуточненная'),
  ('I10', 'Эссенциальная гипертензия'),
  ('G43.9', 'Мигрень неуточненная'),
  ('R51', 'Головная боль');
-INSERT INTO appointments (patient_id, doctor_id, starts_at, ends_at, status, complaint) VALUES
+INSERT INTO medical.appointments (patient_id, doctor_id, starts_at, ends_at, status, complaint) VALUES
  (1, 1, '2026-10-12 09:00+03', '2026-10-12 09:30+03', 'completed', 'Насморк и боль в горле'),
  (2, 2, '2026-10-12 09:00+03', '2026-10-12 09:30+03', 'completed', 'Повышение давления'),
  (3, 3, '2026-10-12 10:00+03', '2026-10-12 10:30+03', 'completed', 'Повторяющаяся головная боль'),
  (1, 4, '2026-10-19 11:00+03', '2026-10-19 11:30+03', 'scheduled', 'Контроль после лечения'),
  (4, 2, '2026-10-19 12:00+03', '2026-10-19 12:30+03', 'cancelled', 'Плановый осмотр'),
  (4, 2, '2026-10-20 12:00+03', '2026-10-20 12:30+03', 'scheduled', 'Повторная запись');
-INSERT INTO appointment_diagnoses (appointment_id, diagnosis_id, clinical_note) VALUES
+INSERT INTO medical.appointment_diagnoses (appointment_id, diagnosis_id, clinical_note) VALUES
  (1, 1, 'Рекомендовано симптоматическое лечение'),
  (2, 2, 'Рекомендован контроль артериального давления'),
  (2, 4, 'Головная боль при повышенном давлении'),

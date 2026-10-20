@@ -1,15 +1,14 @@
 BEGIN;
 CREATE SCHEMA medical;
-SET LOCAL search_path TO medical, public;
 
-CREATE TABLE specialties (
+CREATE TABLE medical.specialties (
     specialty_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name text NOT NULL,
     CONSTRAINT uq_specialties_name UNIQUE (name),
     CONSTRAINT ck_specialties_name CHECK (btrim(name) <> '')
 );
 
-CREATE TABLE patients (
+CREATE TABLE medical.patients (
     patient_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     medical_record_no varchar(20) NOT NULL,
     full_name text NOT NULL,
@@ -24,7 +23,7 @@ CREATE TABLE patients (
     CONSTRAINT ck_patients_phone CHECK (phone ~ '^\+[1-9][0-9]{7,14}$')
 );
 
-CREATE TABLE doctors (
+CREATE TABLE medical.doctors (
     doctor_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     personnel_no varchar(20) NOT NULL,
     full_name text NOT NULL,
@@ -33,10 +32,10 @@ CREATE TABLE doctors (
     CONSTRAINT ck_doctors_personnel CHECK (btrim(personnel_no) <> ''),
     CONSTRAINT ck_doctors_name CHECK (btrim(full_name) <> ''),
     CONSTRAINT fk_doctors_specialty FOREIGN KEY (specialty_id)
-        REFERENCES specialties (specialty_id) ON DELETE RESTRICT
+        REFERENCES medical.specialties (specialty_id) ON DELETE RESTRICT
 );
 
-CREATE TABLE diagnoses (
+CREATE TABLE medical.diagnoses (
     diagnosis_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     code varchar(12) NOT NULL,
     name text NOT NULL,
@@ -45,7 +44,7 @@ CREATE TABLE diagnoses (
     CONSTRAINT ck_diagnoses_name CHECK (btrim(name) <> '')
 );
 
-CREATE TABLE appointments (
+CREATE TABLE medical.appointments (
     appointment_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     patient_id bigint NOT NULL,
     doctor_id bigint NOT NULL,
@@ -54,9 +53,9 @@ CREATE TABLE appointments (
     status varchar(12) NOT NULL DEFAULT 'scheduled',
     complaint text NOT NULL,
     CONSTRAINT fk_appointments_patient FOREIGN KEY (patient_id)
-        REFERENCES patients (patient_id) ON DELETE RESTRICT,
+        REFERENCES medical.patients (patient_id) ON DELETE RESTRICT,
     CONSTRAINT fk_appointments_doctor FOREIGN KEY (doctor_id)
-        REFERENCES doctors (doctor_id) ON DELETE RESTRICT,
+        REFERENCES medical.doctors (doctor_id) ON DELETE RESTRICT,
     CONSTRAINT uq_appointments_doctor_start UNIQUE (doctor_id, starts_at),
     CONSTRAINT uq_appointments_patient_start UNIQUE (patient_id, starts_at),
     CONSTRAINT ck_appointments_time CHECK (isfinite(starts_at) AND isfinite(ends_at) AND ends_at > starts_at),
@@ -64,18 +63,18 @@ CREATE TABLE appointments (
     CONSTRAINT ck_appointments_complaint CHECK (btrim(complaint) <> '')
 );
 
-CREATE TABLE appointment_diagnoses (
+CREATE TABLE medical.appointment_diagnoses (
     appointment_id bigint NOT NULL,
     diagnosis_id bigint NOT NULL,
     clinical_note text NOT NULL,
     CONSTRAINT pk_appointment_diagnoses PRIMARY KEY (appointment_id, diagnosis_id),
     CONSTRAINT fk_ad_appointment FOREIGN KEY (appointment_id)
-        REFERENCES appointments (appointment_id) ON DELETE CASCADE,
+        REFERENCES medical.appointments (appointment_id) ON DELETE CASCADE,
     CONSTRAINT fk_ad_diagnosis FOREIGN KEY (diagnosis_id)
-        REFERENCES diagnoses (diagnosis_id) ON DELETE RESTRICT,
+        REFERENCES medical.diagnoses (diagnosis_id) ON DELETE RESTRICT,
     CONSTRAINT ck_ad_note CHECK (btrim(clinical_note) <> '')
 );
 
-CREATE INDEX ix_doctors_specialty ON doctors (specialty_id);
-CREATE INDEX ix_ad_diagnosis ON appointment_diagnoses (diagnosis_id);
+CREATE INDEX ix_doctors_specialty ON medical.doctors (specialty_id);
+CREATE INDEX ix_ad_diagnosis ON medical.appointment_diagnoses (diagnosis_id);
 COMMIT;
