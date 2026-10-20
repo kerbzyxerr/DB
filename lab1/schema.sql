@@ -18,7 +18,7 @@ CREATE TABLE medical.patients (
     CONSTRAINT uq_patients_record UNIQUE (medical_record_no),
     CONSTRAINT ck_patients_record CHECK (medical_record_no ~ '^P-[0-9]{6}$'),
     CONSTRAINT ck_patients_name CHECK (btrim(full_name) <> ''),
-    CONSTRAINT ck_patients_birth CHECK (birth_date >= DATE '1900-01-01' AND isfinite(birth_date)),
+    CONSTRAINT ck_patients_birth CHECK (birth_date >= DATE '1900-01-01'),
     CONSTRAINT ck_patients_sex CHECK (sex IN ('M', 'F')),
     CONSTRAINT ck_patients_phone CHECK (phone ~ '^\+[1-9][0-9]{7,14}$')
 );
@@ -58,7 +58,7 @@ CREATE TABLE medical.appointments (
         REFERENCES medical.doctors (doctor_id) ON DELETE RESTRICT,
     CONSTRAINT uq_appointments_doctor_start UNIQUE (doctor_id, starts_at),
     CONSTRAINT uq_appointments_patient_start UNIQUE (patient_id, starts_at),
-    CONSTRAINT ck_appointments_time CHECK (isfinite(starts_at) AND isfinite(ends_at) AND ends_at > starts_at),
+    CONSTRAINT ck_appointments_time CHECK (ends_at > starts_at),
     CONSTRAINT ck_appointments_status CHECK (status IN ('scheduled', 'completed', 'cancelled')),
     CONSTRAINT ck_appointments_complaint CHECK (btrim(complaint) <> '')
 );
